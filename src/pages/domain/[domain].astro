@@ -1,0 +1,53 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DomainHeader from '../../components/DomainHeader.astro';
+import DomainDetail from '../../components/DomainDetail.astro';
+import DomainActions from '../../components/DomainActions.astro';
+import domains from '../../data/webs.json';
+
+export async function getStaticPaths() {
+    return domains.map((domain) => ({
+        params: { domain: domain.Domain },
+        props: { domainData: domain }
+    }));
+}
+
+const { domainData } = Astro.props;
+const faviconUrl = `https://www.google.com/s2/favicons?domain=${domainData.Domain}&sz=128`;
+---
+
+<Layout title={`${domainData.Domain} - Rank #${domainData.Rank}`}>
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-gray-800 rounded-lg p-8">
+            <DomainHeader 
+                domain={domainData.Domain}
+                rank={domainData.Rank}
+                faviconUrl={faviconUrl}
+            />
+
+            <div class="grid gap-6 mt-8">
+                <div class="bg-gray-700 p-6 rounded-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-white">Domain Details</h2>
+                    <div class="grid gap-4">
+                        {[1, 2, 3, 4].map((i) => (
+                            <DomainDetail 
+                                label={`Detail ${i}`}
+                                value={domainData[`Detail ${i}`]}
+                            />
+                        ))}
+                        <DomainDetail 
+                            label="Detail 5"
+                            value={domainData["Detail 5"]}
+                            showBorder={false}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <DomainActions 
+                domain={domainData.Domain}
+                rank={domainData.Rank}
+            />
+        </div>
+    </main>
+</Layout>

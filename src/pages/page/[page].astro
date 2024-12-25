@@ -1,0 +1,69 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import domains from '../../data/webs.json';
+
+export async function getStaticPaths() {
+    const DOMAINS_PER_PAGE = 1000;
+    const TOTAL_PAGES = Math.ceil(domains.length / DOMAINS_PER_PAGE);
+    
+    return Array.from({ length: TOTAL_PAGES }, (_, i) => {
+        const page = i + 1;
+        const start = i * DOMAINS_PER_PAGE;
+        const end = start + DOMAINS_PER_PAGE;
+        
+        return {
+            params: { page: String(page) },
+            props: { 
+                domains: domains.slice(start, end),
+                currentPage: page,
+                totalPages: TOTAL_PAGES
+            }
+        };
+    });
+}
+
+const { page } = Astro.params;
+const { domains: pageDomains, currentPage, totalPages } = Astro.props;
+---
+
+<Layout title={`Domain Rankings - Page ${page}`}>
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-6">Domain Rankings - Page {page}</h1>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-gray-800 rounded-lg overflow-hidden">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Rank</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Domain</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700">
+                    {pageDomains.map((domain) => (
+                        <tr class="hover:bg-gray-700">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{domain.Rank}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <a href={`/domain/${domain.Domain}`} class="text-purple-400 hover:text-purple-300">
+                                    {domain.Domain}
+                                </a>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-8 flex justify-center space-x-4">
+            {currentPage > 1 && (
+                <a href={`/page/${currentPage - 1}`} class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+                    Previous
+                </a>
+            )}
+            {currentPage < totalPages && (
+                <a href={`/page/${currentPage + 1}`} class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+                    Next
+                </a>
+            )}
+        </div>
+    </main>
+</Layout>

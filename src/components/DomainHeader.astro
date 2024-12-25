@@ -1,0 +1,27 @@
+---
+interface Props {
+    domain: string;
+    rank: string;
+    faviconUrl: string;
+}
+
+const { domain, rank, faviconUrl } = Astro.props;
+---
+
+<div class="flex items-center gap-4 mb-6">
+    <div class="w-16 h-16 bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
+        <img 
+            src={faviconUrl} 
+            alt={`${domain} favicon`}
+            width="64"
+            height="64"
+            class="rounded-lg max-w-full h-auto"
+            onerror="this.onerror=null; this.src='/favicon.svg'; this.classList.add('p-2');"
+            loading="eager"
+        />
+    </div>
+    <div>
+        <h1 class="text-3xl font-bold text-white">{domain}</h1>
+        <p class="text-purple-400 text-xl">Global Rank #{rank}</p>
+    </div>
+</div>
